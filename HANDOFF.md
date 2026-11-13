@@ -10,9 +10,9 @@ En NES/SNES-emulator som hobbyprojekt, inte kommersiellt. Motorn hålls skild fr
 
 ## Nuläge
 
-NES-versionen för webben finns med sparningar och backup (F-003–F-006, F-009–F-011). Testad automatiskt med egna testfiler, både direkt mot motorn och i en webbläsare utan skärm. Inte provad med riktiga spel, med handkontroll eller på riktig telefon, och ljudet är inte lyssnat på. Publiceringen väntar på att Pages slås på.
+Webbversionen spelar NES och SNES, med sparningar och backup (F-003–F-007, F-009–F-011). Testad automatiskt med egna testfiler, både direkt mot motorn och i en webbläsare utan skärm. Inte provad med riktiga spel, med handkontroll eller på riktig telefon, och ljudet är inte lyssnat på. Publiceringen väntar på att Pages slås på.
 
-Pågår: SNES (F-007) och datorversion (F-008), körda efter varandra.
+Pågår: datorversion för Mac och Linux (F-008).
 
 ## Publicering
 

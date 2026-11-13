@@ -7,7 +7,7 @@
 
 import { chromium } from 'playwright';
 import { preview } from 'vite';
-import { nesTestRom } from '../roms.ts';
+import { nesTestRom, snesTestRom } from '../roms.ts';
 
 const server = await preview({ preview: { port: 4174, strictPort: true }, logLevel: 'warn' });
 const base = 'http://localhost:4174/';
@@ -67,10 +67,40 @@ try {
   check(p1.join() === p2.join(), 'pause stops the picture');
   await page.click('#pause');
 
+  // Switch to a SNES game: a different engine starts.
+  await page.setInputFiles('#file', { name: 'test.sfc', mimeType: 'application/octet-stream', buffer: Buffer.from(snesTestRom()) });
+  await page.waitForFunction(() => document.body.dataset.system === 'snes', null, { timeout: 15000 });
+  await page.waitForTimeout(500);
+  const s = await pixel();
+  check(s[3] === 256 && s[4] === 224, `SNES frame size is ${s[3]}x${s[4]}`);
+  const snesColours = new Set<string>();
+  for (let i = 0; i < 8; i++) {
+    snesColours.add((await pixel()).slice(0, 3).join());
+    await page.waitForTimeout(110);
+  }
+  check(snesColours.size >= 3, `the SNES picture changes over time (${snesColours.size} colours seen)`);
+  await page.keyboard.down('ArrowRight');
+  await page.waitForTimeout(200);
+  const r1 = (await pixel()).slice(0, 3).join();
+  await page.waitForTimeout(300);
+  const r2 = (await pixel()).slice(0, 3).join();
+  await page.keyboard.up('ArrowRight');
+  check(r1 === r2, 'holding Right on SNES gives a steady colour (the game sees the button)');
+
+  // And back to NES.
+  await page.setInputFiles('#file', { name: 'test.nes', mimeType: 'application/octet-stream', buffer: Buffer.from(nesTestRom()) });
+  await page.waitForFunction(() => document.body.dataset.system === 'nes', null, { timeout: 15000 });
+  await page.waitForTimeout(500);
+  const n = await pixel();
+  check(n[3] === 256 && n[4] === 240, 'switching back to NES works');
+
   await page.goto(`${base}licenses.html`);
   await page.waitForSelector('#engines h2', { timeout: 5000 });
   const text = await page.textContent('#engines');
   check(!!text?.includes('Mesen') && /\/tree\/[0-9a-f]{40}/.test(text), 'licences page links the exact Mesen source');
+  check(!!text?.includes('Snes9x') && !!text?.includes('non-commercial'), 'licences page lists Snes9x and its non-commercial licence');
+  const snesLicence = await page.request.get(`${base}licenses/snes9x-LICENSE.txt`);
+  check(snesLicence.ok() && (await snesLicence.text()).includes('non-commercial'), 'Snes9x licence text is served');
   const gpl = await page.request.get(`${base}licenses/GPL-3.0.txt`);
   check(gpl.ok() && (await gpl.text()).includes('GNU GENERAL PUBLIC LICENSE'), 'GPL text is served');
 

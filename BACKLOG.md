@@ -4,16 +4,13 @@ ID: en gemensam nummerserie. B = bugg, F = funktion, D = planering/design.
 
 ## Föreslagna körningar
 
-- **A** – stark modell, hög nivå – SNES
-  - F-007 – Lägg till SNES med Snes9x i samma skal
-- **B** – stark modell, hög nivå – Datorprogram
+- **A** – stark modell, hög nivå – Datorprogram
   - F-008 – Datorversion för Mac och Linux som återanvänder motorerna
 
 ## Öppna
 
 | ID | Prioritet | Beskrivning |
 |---|---|---|
-| F-007 | Medel | SNES-stöd med Snes9x. |
 | F-008 | Låg | Datorprogram för Mac och Linux (inte Windows, användarens beslut 2026-11-13). |
 
 ## Parkerat
@@ -32,4 +29,5 @@ Inget.
 | F-011 | 2026-11-13 | Licenssida med licenstexter och länkar till exakt källkodsversion för st8 och Mesen. Testad i webbläsare. |
 | F-006 | 2026-11-13 | Spelets egna sparfil och save states sparas i webbläsaren: fyra platser med bild (F2/F4 för plats 1), "där du slutade" som skrivs löpande, automatiska lägen var femte minut. Export/import av .srm och äldre kopior som kan väljas tillbaka. Testat automatiskt i webbläsare, även efter omladdning. |
 | F-010 | 2026-11-13 | Backup av allt eller ett spel som en ZIP-fil, och återställning som slår ihop utan att skriva över (äldre kopior behålls). Påminnelse om backup. Testat automatiskt, även återställning i en tom webbläsare. |
+| F-007 | 2026-11-13 | SNES med Snes9x (.sfc, .smc, .swc, .fig) i samma skal, med alla knappar, skärmknappar för X/Y/L/R, save states, sparfil och backup. Byte mellan NES och SNES startar rätt motor. Testat automatiskt med egen testfil, direkt mot motorn och i webbläsare. |
 | D-002 | 2026-11-13 | Upplägg framtaget i docs/ARCHITECTURE.md, inklusive save states och backup. Besluten är fattade (se HANDOFF.md). |

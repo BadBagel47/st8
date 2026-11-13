@@ -49,9 +49,11 @@ build_engine() {
 }
 
 build_engine mesen engines/mesen Libretro STATIC_LINKING=1
+build_engine snes9x engines/snes9x libretro
 
 # Engine manifest, read by the app (licences page, save state metadata).
 MESEN_COMMIT="$(git -C engines/mesen rev-parse HEAD)"
+SNES9X_COMMIT="$(git -C engines/snes9x rev-parse HEAD)"
 cat > "$OUT/manifest.json" <<JSON
 {
   "engines": [
@@ -63,6 +65,15 @@ cat > "$OUT/manifest.json" <<JSON
       "licenceFile": "licenses/GPL-3.0.txt",
       "source": "https://github.com/libretro/Mesen",
       "commit": "$MESEN_COMMIT"
+    },
+    {
+      "id": "snes9x",
+      "name": "Snes9x",
+      "system": "snes",
+      "licence": "Snes9x",
+      "licenceFile": "licenses/snes9x-LICENSE.txt",
+      "source": "https://github.com/snes9xgit/snes9x",
+      "commit": "$SNES9X_COMMIT"
     }
   ]
 }
@@ -70,6 +81,7 @@ JSON
 
 # Licence texts shipped with the app.
 cp LICENSE "$LIC/GPL-3.0.txt"
+cp engines/snes9x/LICENSE "$LIC/snes9x-LICENSE.txt"
 if [ -f node_modules/fflate/LICENSE ]; then
   cp node_modules/fflate/LICENSE "$LIC/fflate-MIT.txt"
 else

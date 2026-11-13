@@ -11,6 +11,8 @@ Checked 2026-11-13. This is a technical review, not legal advice.
 
 Both expose the libretro interface (`libretro.h`, MIT licensed), which is what our shell talks to.
 
+Both engines are git submodules under `engines/`, pinned to the commits above, and built by `scripts/build-engines.sh`. SNES was added in F-007.
+
 Note on Mesen: the libretro core is the earlier Mesen line (0.9.9), maintained by the libretro team. The newer Mesen 2 has no libretro interface and is not used here.
 
 ## Build and test result

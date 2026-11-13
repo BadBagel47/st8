@@ -11,6 +11,7 @@ interface EngineEntry {
 
 const LICENCE_NAMES: Record<string, string> = {
   'GPL-3.0': 'GNU General Public License v3.0',
+  Snes9x: 'Snes9x licence (non-commercial use only)',
 };
 
 const appLink = document.getElementById('app-source') as HTMLAnchorElement;

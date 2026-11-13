@@ -10,7 +10,10 @@ export interface EngineEntry {
   extensions: string[];
 }
 
-export const ENGINES: EngineEntry[] = [{ id: 'mesen', system: 'nes', name: 'NES', file: 'cores/mesen.mjs', extensions: ['nes'] }];
+export const ENGINES: EngineEntry[] = [
+  { id: 'mesen', system: 'nes', name: 'NES', file: 'cores/mesen.mjs', extensions: ['nes'] },
+  { id: 'snes9x', system: 'snes', name: 'SNES', file: 'cores/snes9x.mjs', extensions: ['sfc', 'smc', 'swc', 'fig'] },
+];
 
 const NES_MAGIC = [0x4e, 0x45, 0x53, 0x1a];
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
-    <title>st8 – NES emulator</title>
+    <title>st8 – NES and SNES emulator</title>
     <link rel="stylesheet" href="./src/web/style.css" />
   </head>
   <body>
@@ -31,7 +31,7 @@
         <canvas id="screen" width="256" height="240"></canvas>
         <div id="hint">
           <p><strong>Open a game file</strong> or drop it here.</p>
-          <p class="small">Supported: NES (.nes)</p>
+          <p class="small">Supported: NES (.nes) and SNES (.sfc, .smc)</p>
           <p class="small">Use your own game files. They are read on your device and never uploaded.</p>
         </div>
       </div>
@@ -71,10 +71,13 @@
     <dialog id="help">
       <h2>Controls</h2>
       <table>
-        <tr><th>NES</th><th>Keyboard</th><th>Gamepad</th></tr>
+        <tr><th>Button</th><th>Keyboard</th><th>Gamepad</th></tr>
         <tr><td>D-pad</td><td>Arrow keys</td><td>D-pad or left stick</td></tr>
         <tr><td>A</td><td>X</td><td>Right face button</td></tr>
         <tr><td>B</td><td>Z</td><td>Bottom face button</td></tr>
+        <tr><td>X (SNES)</td><td>S</td><td>Top face button</td></tr>
+        <tr><td>Y (SNES)</td><td>A</td><td>Left face button</td></tr>
+        <tr><td>L / R (SNES)</td><td>Q / W</td><td>Shoulder buttons</td></tr>
         <tr><td>Start</td><td>Enter</td><td>Start / Menu</td></tr>
         <tr><td>Select</td><td>Right Shift or Backspace</td><td>Select / View</td></tr>
       </table>

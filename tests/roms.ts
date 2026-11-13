@@ -61,7 +61,8 @@ export function nesTestRom(): Uint8Array {
  * SNES test ROM (LoROM, 256 KB, 2 KB battery-backed SRAM). Each frame it:
  * - increments a counter in WRAM $00 and copies it to SRAM $70:0000,
  * - stores controller 1 in WRAM $01 (JOY1L: A X L R) and $02 (JOY1H: B Y Select Start Up Down Left Right),
- * - writes the counter to colour 0 (the backdrop).
+ * - writes JOY1H to colour 0 (the backdrop) while a button in it is held,
+ *   otherwise the counter.
  */
 export function snesTestRom(): Uint8Array {
   const rom = new Uint8Array(0x40000);
@@ -79,16 +80,18 @@ export function snesTestRom(): Uint8Array {
     0xad, 0x19, 0x42, //       8018 LDA $4219   ; JOY1H
     0x85, 0x02, //             801B STA $02
     0x9c, 0x21, 0x21, //       801D STZ $2121   ; colour 0
-    0xa5, 0x00, //             8020 LDA $00
-    0x8d, 0x22, 0x21, //       8022 STA $2122
-    0x8d, 0x22, 0x21, //       8025 STA $2122
-    0xa9, 0x0f, //             8028 LDA #$0F
-    0x8d, 0x00, 0x21, //       802A STA $2100   ; screen on
-    0x2c, 0x12, 0x42, //       802D vb1: BIT $4212
-    0x10, 0xfb, //             8030 BPL vb1     ; wait for vertical blank
-    0x2c, 0x12, 0x42, //       8032 vb2: BIT $4212
-    0x30, 0xfb, //             8035 BMI vb2     ; wait for it to end
-    0x4c, 0x0b, 0x80, //       8037 JMP main
+    0xa5, 0x02, //             8020 LDA $02     ; buttons held (JOY1H)?
+    0xd0, 0x02, //             8022 BNE colour  ; then show them as the colour
+    0xa5, 0x00, //             8024 LDA $00     ; else show the counter
+    0x8d, 0x22, 0x21, //       8026 colour: STA $2122
+    0x8d, 0x22, 0x21, //       8029 STA $2122
+    0xa9, 0x0f, //             802C LDA #$0F
+    0x8d, 0x00, 0x21, //       802E STA $2100   ; screen on
+    0x2c, 0x12, 0x42, //       8031 vb1: BIT $4212
+    0x10, 0xfb, //             8034 BPL vb1     ; wait for vertical blank
+    0x2c, 0x12, 0x42, //       8036 vb2: BIT $4212
+    0x30, 0xfb, //             8039 BMI vb2     ; wait for it to end
+    0x4c, 0x0b, 0x80, //       803B JMP main
   ];
   rom.set(code, 0);
   rom[0x100] = 0x40; // 8100: RTI

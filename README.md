@@ -1,17 +1,17 @@
 # st8
 
-A NES emulator for the web, with SNES and a desktop version planned. A non-commercial hobby project.
+A NES and SNES emulator for the web, with a desktop version for Mac and Linux planned. A non-commercial hobby project.
 
 **Play:** https://badbagel47.github.io/st8/
 
-Load your own game files (`.nes`). They are read on your device and never uploaded. No games are included.
+Load your own game files (`.nes`, `.sfc`, `.smc`). They are read on your device and never uploaded. No games are included.
 
 ## How it works
 
 st8 does not contain its own emulation code. It runs established open-source emulator engines, built unchanged from their source to WebAssembly, behind a small shell:
 
 - NES: [Mesen](https://github.com/libretro/Mesen) (libretro core)
-- SNES (planned): [Snes9x](https://github.com/snes9xgit/snes9x)
+- SNES: [Snes9x](https://github.com/snes9xgit/snes9x)
 
 The engines talk to the shell through the [libretro](https://www.libretro.com/) API. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/ENGINES.md](docs/ENGINES.md).
 
