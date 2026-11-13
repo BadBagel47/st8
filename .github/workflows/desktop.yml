@@ -120,6 +120,10 @@ jobs:
         if: matrix.name == 'macos'
         run: ST8_SELFTEST=1 desktop/target/universal-apple-darwin/release/st8
 
+      - name: Check the app signature (macOS)
+        if: matrix.name == 'macos'
+        run: codesign --verify --deep --strict --verbose=2 desktop/target/universal-apple-darwin/release/bundle/macos/st8.app
+
       - name: Collect files
         run: |
           mkdir -p out
@@ -156,7 +160,11 @@ jobs:
           rm out/source-commit.txt
           NOTES="Latest desktop build of st8, made automatically from commit $SHA ($(date -u +%Y-%m-%d)).
 
-          - macOS (Apple silicon and Intel): st8-macos-universal.dmg. The app is not signed: the first time, right-click st8 in Applications and choose Open.
+          - macOS (Apple silicon and Intel): st8-macos-universal.dmg. Open it and drag st8 to Applications.
+            st8 is not signed by a registered Apple developer, so macOS blocks it the first time (\"Apple could not verify...\").
+            Choose Done (not Move to Trash), open System Settings > Privacy & Security, scroll down to Security,
+            click Open Anyway next to st8 and confirm. After that it opens normally.
+            Alternatively, in Terminal: xattr -dr com.apple.quarantine /Applications/st8.app
           - Linux: st8-linux-x86_64.AppImage (make it executable and run it) or st8-linux-amd64.deb.
 
           Source code of this build: https://github.com/$REPO/tree/$SHA"

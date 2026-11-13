@@ -25,12 +25,27 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["app", "dmg", "appimage", "deb"],
+    "targets": [
+      "app",
+      "dmg",
+      "appimage",
+      "deb"
+    ],
     "category": "Game",
     "shortDescription": "NES and SNES emulator",
     "longDescription": "st8 plays your own NES and SNES game files, with save states and backup. A non-commercial hobby project.",
     "license": "GPL-3.0-or-later",
     "licenseFile": "../LICENSE",
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.png"]
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.png"
+    ],
+    "macOS": {
+      "signingIdentity": "-",
+      "minimumSystemVersion": "10.15"
+    }
   }
 }

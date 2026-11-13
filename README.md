@@ -5,7 +5,7 @@ A NES and SNES emulator for the web and for Mac and Linux. A non-commercial hobb
 **Play in the browser:** https://badbagel47.github.io/st8/
 
 **Desktop app:** download from the [desktop-latest release](https://github.com/BadBagel47/st8/releases/tag/desktop-latest).
-- macOS (Apple silicon and Intel): `st8-macos-universal.dmg`. The app is not signed, so the first time: right-click st8 in Applications and choose Open.
+- macOS (Apple silicon and Intel): `st8-macos-universal.dmg`. Open it and drag st8 to Applications. st8 is not signed by a registered Apple developer, so macOS blocks it the first time ("Apple could not verify…"). Choose Done (not Move to Trash), then open System Settings → Privacy & Security, scroll down to Security and click Open Anyway next to st8, and confirm. After that it opens normally. Alternatively, in Terminal: `xattr -dr com.apple.quarantine /Applications/st8.app`
 - Linux: `st8-linux-x86_64.AppImage` (make it executable and run it) or `st8-linux-amd64.deb`.
 
 Save states, the games' own save files and backup work the same in both. A backup made in the browser can be restored in the desktop app and the other way round.

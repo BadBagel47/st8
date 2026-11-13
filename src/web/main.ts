@@ -307,6 +307,7 @@ attachTouchControls(touch, (mask) => input.setTouchMask(mask));
 
 async function start(): Promise<void> {
   setStatus('Loading…');
+  if (isDesktop) document.querySelectorAll<HTMLElement>('.web-only').forEach((e) => (e.hidden = true));
   try {
     store = isDesktop ? new FileStore(desktopFiles) : await IdbStore.open();
   } catch {

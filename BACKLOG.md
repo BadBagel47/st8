@@ -4,9 +4,7 @@ ID: en gemensam nummerserie. B = bugg, F = funktion, D = planering/design.
 
 ## Föreslagna körningar
 
-- **A** – standardmodell, medelnivå – Mac-appen
-  - B-014 – Rätta Mac-instruktionerna och ad hoc-signera appen
-- **B** – standardmodell, medelnivå – Hantera sparningar
+- **A** – standardmodell, medelnivå – Hantera sparningar
   - F-013 – Ta bort save states och gamla kopior, så att listan går att hålla ren
 
 Parkerat: F-012 (kräver Apple-utvecklarkonto).
@@ -15,7 +13,6 @@ Parkerat: F-012 (kräver Apple-utvecklarkonto).
 
 | ID | Prioritet | Beskrivning |
 |---|---|---|
-| B-014 | Medel | Mac: "st8 öppnades inte – Apple kunde inte verifiera…" (rapporterat av användaren 2026-11-13). Appen är inte signerad. Instruktionen "högerklicka och välj Öppna" i README och releasetexten fungerar inte i nyare macOS. Där gäller Systeminställningar → Integritet och säkerhet → Öppna ändå, eller `xattr -dr com.apple.quarantine /Applications/st8.app`. Åtgärd: rätta instruktionerna (README, releasetext, gärna en länk i appen) och ad hoc-signera bundlen (`bundle.macOS.signingIdentity: "-"`) så att appen inte kan bedömas som skadad. Varningen försvinner bara med F-012. |
 | F-013 | Låg | Ta bort save states och äldre kopior av sparfilen i sparpanelen. I dag kan inget tas bort, så listan växer med automatiska och behållna kopior. Borttagning måste bekräftas. |
 | F-012 | Låg | Signera och notarisera Mac-appen så att den öppnas utan varning. Kräver ett betalt Apple-utvecklarkonto (användarens beslut). Status: Parkerad. |
 
@@ -37,4 +34,5 @@ Inget.
 | F-010 | 2026-11-13 | Backup av allt eller ett spel som en ZIP-fil, och återställning som slår ihop utan att skriva över (äldre kopior behålls). Påminnelse om backup. Testat automatiskt, även återställning i en tom webbläsare. |
 | F-007 | 2026-11-13 | SNES med Snes9x (.sfc, .smc, .swc, .fig) i samma skal, med alla knappar, skärmknappar för X/Y/L/R, save states, sparfil och backup. Byte mellan NES och SNES startar rätt motor. Testat automatiskt med egen testfil, direkt mot motorn och i webbläsare. |
 | F-008 | 2026-11-13 | Datorversion för Mac (universell) och Linux (AppImage och deb) med Tauri. Samma motorer och sida som webben; sparningar som filer i appens datamapp; spara-dialog för export. Självtest i riktigt fönster godkänt på Linux (här och på GitHub) och på Mac (på GitHub). Filerna ligger på releasen desktop-latest. |
+| B-014 | 2026-11-13 | Mac-appen blockerades av macOS. Instruktionerna i README och på nedladdningssidan beskriver nu Systeminställningar → Integritet och säkerhet → Öppna ändå (och Terminal-alternativet). Appen ad hoc-signeras och signaturen kontrolleras i bygget. Webbsidan länkar till datorversionen. Varningen första gången finns kvar tills F-012. |
 | D-002 | 2026-11-13 | Upplägg framtaget i docs/ARCHITECTURE.md, inklusive save states och backup. Besluten är fattade (se HANDOFF.md). |
