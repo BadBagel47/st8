@@ -4,7 +4,9 @@ ID: en gemensam nummerserie. B = bugg, F = funktion, D = planering/design.
 
 ## Föreslagna körningar
 
-- **A** – standardmodell, medelnivå – Hantera sparningar
+- **A** – standardmodell, medelnivå – Mac-appen
+  - B-014 – Rätta Mac-instruktionerna och ad hoc-signera appen
+- **B** – standardmodell, medelnivå – Hantera sparningar
   - F-013 – Ta bort save states och gamla kopior, så att listan går att hålla ren
 
 Parkerat: F-012 (kräver Apple-utvecklarkonto).
@@ -13,6 +15,7 @@ Parkerat: F-012 (kräver Apple-utvecklarkonto).
 
 | ID | Prioritet | Beskrivning |
 |---|---|---|
+| B-014 | Medel | Mac: "st8 öppnades inte – Apple kunde inte verifiera…" (rapporterat av användaren 2026-11-13). Appen är inte signerad. Instruktionen "högerklicka och välj Öppna" i README och releasetexten fungerar inte i nyare macOS. Där gäller Systeminställningar → Integritet och säkerhet → Öppna ändå, eller `xattr -dr com.apple.quarantine /Applications/st8.app`. Åtgärd: rätta instruktionerna (README, releasetext, gärna en länk i appen) och ad hoc-signera bundlen (`bundle.macOS.signingIdentity: "-"`) så att appen inte kan bedömas som skadad. Varningen försvinner bara med F-012. |
 | F-013 | Låg | Ta bort save states och äldre kopior av sparfilen i sparpanelen. I dag kan inget tas bort, så listan växer med automatiska och behållna kopior. Borttagning måste bekräftas. |
 | F-012 | Låg | Signera och notarisera Mac-appen så att den öppnas utan varning. Kräver ett betalt Apple-utvecklarkonto (användarens beslut). Status: Parkerad. |
 
