@@ -1,0 +1,22 @@
+{
+  "name": "st8",
+  "private": true,
+  "version": "0.1.0",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "build:engines": "bash scripts/build-engines.sh",
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:e2e": "node tests/e2e/smoke.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "playwright": "1.63.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  }
+}

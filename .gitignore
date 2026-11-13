@@ -13,3 +13,6 @@
 node_modules/
 dist/
 poc/engine-check/build/
+build/
+public/cores/
+public/licenses/

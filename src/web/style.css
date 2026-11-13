@@ -1,0 +1,158 @@
+:root {
+  --bg: #111318;
+  --panel: #1b1e26;
+  --line: #2c313d;
+  --text: #e7e9ee;
+  --muted: #9aa1b0;
+  --accent: #e0483e;
+  --error: #ff8a80;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; height: 100%; }
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.45em 0.9em;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--muted); }
+button:disabled { opacity: 0.45; cursor: default; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+button.link { background: none; border: none; padding: 0; color: var(--muted); text-decoration: underline; }
+a { color: var(--muted); }
+:focus-visible { outline: 2px solid #8ab4ff; outline-offset: 2px; }
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.bar h1 { margin: 0; font-size: 1.2rem; letter-spacing: 0.05em; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.volume { display: inline-flex; align-items: center; gap: 0.3rem; }
+.volume button { padding: 0.35em 0.5em; }
+.volume input { width: 6rem; accent-color: var(--accent); }
+
+#stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #000;
+}
+#screen-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#screen {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #000;
+}
+#hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  color: var(--muted);
+  border: 2px dashed transparent;
+}
+#hint[hidden] { display: none; }
+body.dragging #hint { display: flex; border-color: var(--accent); background: rgb(0 0 0 / 0.7); }
+.small { font-size: 0.85rem; color: var(--muted); }
+
+#status { margin: 0; padding: 0.4rem 1rem; min-height: 1.8rem; font-size: 0.9rem; color: var(--muted); }
+#status.error { color: var(--error); }
+
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem 0.9rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+dialog {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  max-width: 34rem;
+}
+dialog::backdrop { background: rgb(0 0 0 / 0.6); }
+dialog table { border-collapse: collapse; width: 100%; }
+dialog th, dialog td { text-align: left; padding: 0.3rem 0.6rem 0.3rem 0; border-bottom: 1px solid var(--line); }
+
+/* Touch controls */
+#touch {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: 'dpad . face' 'meta meta meta';
+  align-items: center;
+  gap: 0.6rem 0.5rem;
+  padding: 0.8rem 1rem 1rem;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+#touch[hidden] { display: none; }
+.dpad { grid-area: dpad; display: grid; grid-template-columns: repeat(3, 3.2rem); grid-template-rows: repeat(3, 3.2rem); }
+.dpad .key { background: #2a2e38; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+.meta { grid-area: meta; display: flex; gap: 0.8rem; justify-content: center; }
+.pill { padding: 0.4rem 0.9rem; border-radius: 999px; background: #2a2e38; color: var(--muted); font-size: 0.8rem; }
+.face { grid-area: face; display: flex; gap: 0.9rem; align-items: center; }
+.round {
+  width: 4rem; height: 4rem; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent); color: #fff; font-weight: 700; font-size: 1.2rem;
+}
+.face .round:first-child { margin-top: 1.5rem; }
+#touch .pressed { filter: brightness(1.5); }
+@media (max-width: 600px) {
+  .bar { padding: 0.5rem 0.75rem; gap: 0.4rem 0.75rem; }
+  .bar h1 { font-size: 1rem; }
+  .actions { gap: 0.35rem; }
+  .actions button { font-size: 0.85rem; padding: 0.4em 0.7em; }
+  .volume input { width: 4.5rem; }
+  footer { font-size: 0.75rem; }
+}
+
+/* Full screen: game and touch controls only */
+#stage:fullscreen { width: 100vw; height: 100vh; }
+
+/* Licences page */
+body.page { display: block; }
+.doc { max-width: 46rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; line-height: 1.55; }
+.doc h2 { margin-top: 2rem; font-size: 1.1rem; }
+.doc a { word-break: break-all; }

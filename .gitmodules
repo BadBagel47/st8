@@ -1,0 +1,3 @@
+[submodule "engines/mesen"]
+	path = engines/mesen
+	url = https://github.com/libretro/Mesen

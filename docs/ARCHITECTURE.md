@@ -1,6 +1,6 @@
 # Architecture (D-002)
 
-Status: proposal from run A, 2026-11-13. Items marked "needs approval" are listed in HANDOFF.md.
+Status: approved 2026-11-13. Implemented for the web (NES) in F-003 to F-011; saves, SNES and desktop are still to come.
 
 ## Goals
 
@@ -17,7 +17,7 @@ Core host: loads an engine, speaks libretro, no browser/desktop dependencies
 Engines: one WebAssembly file per engine (Mesen, Snes9x), built unmodified
 ```
 
-1. Engines. Each engine is built from pinned upstream source with Emscripten into its own WebAssembly file exposing the libretro API. Engine source is referenced as git submodules at pinned commits, never copied into the repo. Engines are never linked together (licence separation, see ENGINES.md).
+1. Engines. Each engine is built from pinned upstream source with Emscripten into its own WebAssembly file exposing the libretro API. Engine source is referenced as git submodules (engines/), built by scripts/build-engines.sh, at pinned commits, never copied into the repo. Engines are never linked together (licence separation, see ENGINES.md).
 
 2. Core host. A small library that loads one engine file and offers a plain interface:
    `loadGame(bytes, name)`, `runFrame()`, `setInput(port, buttons)`, `reset()`,
@@ -34,7 +34,7 @@ Engines: one WebAssembly file per engine (Mesen, Snes9x), built unmodified
 
 4. UI. Load a game, play, save/load state, manage saves, backup, settings, licences page.
 
-## Technology (needs approval)
+## Technology
 
 Recommendation: shell in TypeScript; desktop app by packaging the same shell and the same engine files with Tauri.
 

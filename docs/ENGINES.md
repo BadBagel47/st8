@@ -15,7 +15,7 @@ Note on Mesen: the libretro core is the earlier Mesen line (0.9.9), maintained b
 
 ## Build and test result
 
-Reproduce with `poc/engine-check/build.sh` (needs an activated Emscripten SDK). Tested with Emscripten 7.0.0 and Node 22.
+The production build is `scripts/build-engines.sh` (engines as submodules under `engines/`). The original check can be reproduced with `poc/engine-check/build.sh` (needs an activated Emscripten SDK). Tested with Emscripten 7.0.0 and Node 22.
 
 | | Mesen (NES) | Snes9x (SNES) |
 |---|---|---|
@@ -54,9 +54,9 @@ Combining the two:
 - GPL v3 and the Snes9x licence are not compatible inside one program. They must never be linked into the same binary.
 - Our design keeps each engine as its own separately built WebAssembly file, loaded at run time through the MIT-licensed libretro interface. This is the same separation RetroArch (GPL v3) and its cores rely on. It is established practice, not a legal guarantee.
 
-Licence for our own code (the shell): open question for the user, see HANDOFF.md. Recommendation: GPL v3 or MIT; both work with the design above.
+Licence for our own code: GPL v3 or later (decided 2026-11-13).
 
-What the app must contain (tracked as F-011): a licences page naming both engines, their licence texts, and links to the exact source commits and to this repo.
+What the app must contain (done in F-011): a licences page naming both engines, their licence texts, and links to the exact source commits and to this repo.
 
 ## ROM files
 
