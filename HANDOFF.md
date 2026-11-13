@@ -10,7 +10,7 @@ En NES/SNES-emulator som hobbyprojekt, inte kommersiellt. Motorn hålls skild fr
 
 ## Nuläge
 
-Första spelbara NES-versionen för webben är byggd (körning A: F-003, F-004, F-005, F-009, F-011). Testad automatiskt med en egen testfil, både direkt mot motorn och i en webbläsare utan skärm. Inte provad med riktiga spel, med handkontroll eller på riktig telefon, och ljudet är inte lyssnat på.
+Första spelbara NES-versionen för webben är byggd (körning A: F-003, F-004, F-005, F-009, F-011). Testad automatiskt med en egen testfil, både direkt mot motorn och i en webbläsare utan skärm, lokalt och på GitHub (bygg och tester gröna 2026-11-13). Publiceringen misslyckas tills Pages är påslaget. Inte provad med riktiga spel, med handkontroll eller på riktig telefon, och ljudet är inte lyssnat på.
 
 Nästa steg: användaren slår på GitHub Pages (se Engångsåtgärder) och provar sidan. Därefter körning A i [BACKLOG.md](BACKLOG.md) (save states och backup).
 
