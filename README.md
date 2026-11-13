@@ -20,8 +20,9 @@ The engines talk to the shell through the [libretro](https://www.libretro.com/) 
 Requirements: Node 22, git, make, and the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html) (version 7.0.0) activated in the shell.
 
 ```bash
-git clone --recurse-submodules https://github.com/BadBagel47/st8.git
+git clone https://github.com/BadBagel47/st8.git
 cd st8
+git submodule update --init   # the engines (not their own submodules)
 npm ci
 npm run build:engines   # builds the engines to WebAssembly (needs emcc)
 npm test                # engine tests in Node
