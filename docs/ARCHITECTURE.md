@@ -38,7 +38,7 @@ Engines: one WebAssembly file per engine (Mesen, Snes9x), built unmodified
 
 Recommendation: shell in TypeScript; desktop app by packaging the same shell and the same engine files with Tauri.
 
-Why this replaces the earlier Rust recommendation: Rust was recommended when the plan was to write the engine ourselves. With ready-made engines delivered as WebAssembly, everything the shell does is browser functionality (canvas, audio, gamepad, storage), which TypeScript reaches directly. Tauri (itself Rust based) gives a real installable program for Windows, Mac and Linux with file access, at small size.
+Why this replaces the earlier Rust recommendation: Rust was recommended when the plan was to write the engine ourselves. With ready-made engines delivered as WebAssembly, everything the shell does is browser functionality (canvas, audio, gamepad, storage), which TypeScript reaches directly. Tauri (itself Rust based) gives a real installable program for Mac and Linux (Windows is out of scope) with file access, at small size.
 
 Main benefit: web and desktop run the identical engine files, so behaviour and save states are the same everywhere, and a backup made on the web can be restored on desktop and back.
 
@@ -80,7 +80,7 @@ Save state compatibility: a save state belongs to the engine version that made i
 
 - Build: GitHub Actions builds the engines with Emscripten (cached per pinned commit) and the shell, then deploys to GitHub Pages.
 - Note for F-009: pushes made by the auto-merge workflow use the built-in token and do not start other "on push" workflows. The deploy workflow must therefore also start on completion of the auto-merge workflow (`workflow_run`), or be branch-based.
-- Desktop builds (later): Tauri build per operating system in GitHub Actions, published as release files.
+- Desktop builds (later): Tauri build for macOS and Linux in GitHub Actions, published as release files.
 
 ## Testing
 

@@ -10,7 +10,7 @@ ID: en gemensam nummerserie. B = bugg, F = funktion, D = planering/design.
 - **B** – stark modell, hög nivå – SNES
   - F-007 – Lägg till SNES med Snes9x i samma skal
 - **C** – stark modell, hög nivå – Datorprogram
-  - F-008 – Datorversion för Windows, Mac och Linux som återanvänder motorerna
+  - F-008 – Datorversion för Mac och Linux som återanvänder motorerna
 
 ## Öppna
 
@@ -19,7 +19,7 @@ ID: en gemensam nummerserie. B = bugg, F = funktion, D = planering/design.
 | F-006 | Hög | Sparfiler och save states lagrade lokalt i webbläsaren. Fram till dess försvinner spelets egna sparningar när sidan laddas om. Bedöm reglerna om lagring (LEK 9 kap. 28 §). Användarens krav: viktigt. |
 | F-010 | Hög | Backup: exportera och återställ sparfiler och save states som en fil, så att inget går förlorat om webbläsarens lagring rensas. Formatet ska fungera även i datorversionen. Användarens krav: viktigt. Format enligt docs/ARCHITECTURE.md. |
 | F-007 | Medel | SNES-stöd med Snes9x. |
-| F-008 | Låg | Datorprogram för Windows, Mac och Linux. |
+| F-008 | Låg | Datorprogram för Mac och Linux (inte Windows, användarens beslut 2026-11-13). |
 
 ## Parkerat
 

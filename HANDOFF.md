@@ -31,6 +31,7 @@ Se README.md. Kortfattat: Emscripten 7.0.0 aktiverat, sedan `npm ci`, `npm run b
 - 2026-11-13: ROM-filer laddas av användaren och läses bara lokalt i webbläsaren. Inga ROM-filer i repot eller på servern.
 - 2026-11-13: Save states och backup är ett kärnkrav (F-006, F-010) och ska finnas med i upplägget från början (D-002).
 - 2026-11-13: Teknik för skalet: TypeScript för webben och Tauri för datorversionen (användaren körde vidare på rekommendationen efter D-002; ersätter den tidigare Rust-rekommendationen).
+- 2026-11-13: Datorversionen (F-008) planeras bara för Mac och Linux, inte Windows.
 - 2026-11-13: Vår egen kod licensieras under GPL v3 eller senare (användaren körde vidare på rekommendationen).
 - 2026-11-13: Varje motor byggs som en egen fil och länkas aldrig ihop med den andra (licensskäl, docs/ENGINES.md). Motorversionerna låses, eftersom save states hör till motorversionen.
 
