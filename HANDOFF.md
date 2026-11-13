@@ -48,7 +48,7 @@ Planerat: GitHub Pages från main. Inte uppsatt och inte verifierat än (ingår 
 
 ## Engångsåtgärder
 
-- Byt standardgren till main i repoinställningarna: väntar (standardgrenen blev agentens gren eftersom den pushades först).
+- Byt standardgren till main i repoinställningarna: gjort 2026-11-13.
 - Slå på GitHub Pages för repot: väntar (behövs i F-009).
 
 ## Dokumentkarta
