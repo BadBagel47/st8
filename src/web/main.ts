@@ -1,9 +1,14 @@
-// Page logic: wires the emulator worker to the screen, audio, input and UI.
+// Page logic: wires the emulator, saves, audio, input and UI together.
 
 import type { AvInfo } from '../core/host';
 import { AudioOutput } from './audio';
+import { Emulator } from './emulator';
 import { Input, attachTouchControls } from './input';
-import type { FromWorker, ToWorker } from './protocol';
+import { SavesDialog } from './saves-ui';
+import { QUICK_SLOT, Session } from './session';
+import { IdbStore } from './storage/idb';
+import { MemoryStore } from './storage/memory';
+import type { SaveStore } from './storage/types';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const canvas = $<HTMLCanvasElement>('screen');
@@ -11,30 +16,45 @@ const ctx = canvas.getContext('2d', { alpha: false })!;
 const wrap = $<HTMLDivElement>('screen-wrap');
 const hint = $<HTMLDivElement>('hint');
 const statusEl = $<HTMLParagraphElement>('status');
+const notice = $<HTMLDivElement>('notice');
 const fileInput = $<HTMLInputElement>('file');
 const btnOpen = $<HTMLButtonElement>('open');
 const btnPause = $<HTMLButtonElement>('pause');
 const btnReset = $<HTMLButtonElement>('reset');
+const btnSaves = $<HTMLButtonElement>('saves');
 const btnFullscreen = $<HTMLButtonElement>('fullscreen');
 const btnMute = $<HTMLButtonElement>('mute');
 const volume = $<HTMLInputElement>('volume');
 const touch = $<HTMLDivElement>('touch');
 const stage = $<HTMLElement>('stage');
 const help = $<HTMLDialogElement>('help');
+const savesDialog = $<HTMLDialogElement>('saves-dialog');
 
-const worker = new Worker(new URL('./emulator.worker.ts', import.meta.url), { type: 'module' });
-const send = (msg: ToWorker, transfer: Transferable[] = []) => worker.postMessage(msg, transfer);
 const audio = new AudioOutput();
-const input = new Input((port, mask) => send({ type: 'input', port, mask }));
-
 let aspectRatio = 4 / 3;
 let gameLoaded = false;
 let userPaused = false;
 let pendingFrame: { width: number; height: number; pixels: ArrayBuffer } | null = null;
+let store: SaveStore;
 
 function setStatus(text: string, isError = false): void {
   statusEl.textContent = text;
   statusEl.classList.toggle('error', isError);
+}
+
+/** A message with action buttons above the game. */
+function showNotice(text: string, actions: [string, () => void][]): void {
+  notice.replaceChildren(text);
+  for (const [label, fn] of actions) {
+    const b = document.createElement('button');
+    b.textContent = label;
+    b.addEventListener('click', () => {
+      notice.hidden = true;
+      fn();
+    });
+    notice.append(' ', b);
+  }
+  notice.hidden = false;
 }
 
 // ---------- Video ----------
@@ -63,6 +83,30 @@ function draw(): void {
   ctx.putImageData(new ImageData(new Uint8ClampedArray(pixels), width, height), 0, 0);
 }
 
+function applyAv(av: AvInfo): void {
+  aspectRatio = av.aspectRatio > 0 ? av.aspectRatio : 4 / 3;
+  layout();
+}
+
+function thumbnail(): Promise<Uint8Array | null> {
+  draw();
+  return new Promise((resolve) =>
+    canvas.toBlob(async (blob) => resolve(blob ? new Uint8Array(await blob.arrayBuffer()) : null), 'image/png'),
+  );
+}
+
+// ---------- Emulator and session ----------
+
+const emulator = new Emulator(audio, {
+  frame: (width, height, pixels) => (pendingFrame = { width, height, pixels }),
+  av: applyAv,
+  saveRam: (data) => session.handleSaveRam(data),
+  error: (message) => setStatus(message, true),
+});
+const input = new Input((port, mask) => emulator.send({ type: 'input', port, mask }));
+let session: Session;
+let saves: SavesDialog;
+
 function loop(): void {
   input.update();
   draw();
@@ -70,56 +114,49 @@ function loop(): void {
 }
 requestAnimationFrame(loop);
 
-function applyAv(av: AvInfo): void {
-  aspectRatio = av.aspectRatio > 0 ? av.aspectRatio : 4 / 3;
-  layout();
-}
-
-// ---------- Worker messages ----------
-
-worker.onmessage = (e: MessageEvent<FromWorker>) => {
-  const msg = e.data;
-  switch (msg.type) {
-    case 'ready':
-      btnOpen.disabled = false;
-      setStatus('');
-      break;
-    case 'loaded':
-      gameLoaded = true;
-      userPaused = false;
-      hint.hidden = true;
-      btnPause.disabled = btnReset.disabled = false;
-      btnPause.textContent = 'Pause';
-      applyAv(msg.av);
-      setStatus(audio.available ? '' : 'Sound is not available in this browser.');
-      break;
-    case 'av':
-      applyAv(msg.av);
-      break;
-    case 'frame':
-      pendingFrame = msg;
-      break;
-    case 'error':
-      setStatus(msg.message, true);
-      break;
-  }
-};
-worker.onerror = () => setStatus('The emulator stopped because of an error. Reload the page to try again.', true);
-
 // ---------- Loading games ----------
-
-const NES_MAGIC = [0x4e, 0x45, 0x53, 0x1a];
 
 async function openFile(file: File): Promise<void> {
   audio.unlock();
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  const isNes = NES_MAGIC.every((b, i) => bytes[i] === b);
-  if (!isNes) {
-    setStatus(`"${file.name}" is not an NES game file (.nes).`, true);
-    return;
-  }
+  notice.hidden = true;
   setStatus(`Starting ${file.name}…`);
-  send({ type: 'load', bytes: bytes.buffer, fileName: file.name }, [bytes.buffer]);
+  try {
+    const result = await session.open({ name: file.name, bytes: new Uint8Array(await file.arrayBuffer()) });
+    if (typeof result === 'string') return setStatus(result, true);
+    gameLoaded = true;
+    userPaused = false;
+    hint.hidden = true;
+    btnPause.disabled = btnReset.disabled = false;
+    btnPause.textContent = 'Pause';
+    document.body.dataset.system = session.current!.game.system;
+    applyAv(result);
+    setStatus(audio.available ? '' : 'Sound is not available in this browser.');
+    await offerResume();
+  } catch (err) {
+    setStatus(err instanceof Error ? err.message : String(err), true);
+  }
+}
+
+async function offerResume(): Promise<void> {
+  const states = await session.states();
+  const resume = states.find((s) => s.slot === 'resume');
+  if (resume) {
+    // Wait for the answer before playing, so the old position is not replaced.
+    setPaused(true);
+    const go = () => {
+      session.releaseResume();
+      if (!userPaused) setPaused(false);
+    };
+    showNotice(`Continue where you left off (${new Date(resume.createdAt).toLocaleString()})?`, [
+      ['Continue', () => void session.loadState('resume').then((e) => (e && setStatus(e, true), go()))],
+      ['Start over', go],
+    ]);
+  } else if (await session.needsBackupReminder()) {
+    showNotice('Your saves are stored only on this device. Make a backup now and then.', [
+      ['Back up now', () => void session.exportBackup(false)],
+      ['Later', () => {}],
+    ]);
+  }
 }
 
 btnOpen.addEventListener('click', () => {
@@ -149,7 +186,8 @@ document.addEventListener('drop', (e) => {
 
 function setPaused(paused: boolean): void {
   if (!gameLoaded) return;
-  send({ type: paused ? 'pause' : 'resume' });
+  emulator.send({ type: paused ? 'pause' : 'resume' });
+  session.setPlaying(!paused);
   btnPause.textContent = paused ? 'Resume' : 'Pause';
 }
 
@@ -159,13 +197,44 @@ btnPause.addEventListener('click', () => {
   btnPause.blur();
 });
 btnReset.addEventListener('click', () => {
-  send({ type: 'reset' });
+  emulator.send({ type: 'reset' });
   btnReset.blur();
 });
 
+btnSaves.addEventListener('click', () => {
+  btnSaves.blur();
+  input.enabled = false;
+  setPaused(true);
+  void saves.open();
+});
+savesDialog.addEventListener('close', () => {
+  input.enabled = true;
+  if (!userPaused) setPaused(false);
+});
+
+window.addEventListener('keydown', (e) => {
+  if (!gameLoaded || savesDialog.open || e.repeat) return;
+  if (e.key === 'F2') {
+    e.preventDefault();
+    session.saveState(QUICK_SLOT).then(
+      () => setStatus('Saved to slot 1.'),
+      (err) => setStatus(String(err.message ?? err), true),
+    );
+  } else if (e.key === 'F4') {
+    e.preventDefault();
+    void session.loadState(QUICK_SLOT).then((err) => setStatus(err ?? 'Loaded slot 1.', !!err));
+  }
+});
+
+// Leaving the page or switching tabs: pause and keep the progress.
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) setPaused(true);
-  else if (!userPaused) setPaused(false);
+  if (document.hidden) {
+    setPaused(true);
+    if (gameLoaded) void session.saveResume();
+  } else if (!userPaused && !savesDialog.open) setPaused(false);
+});
+window.addEventListener('pagehide', () => {
+  if (gameLoaded) session.saveResumeNow();
 });
 
 // Audio may only start after a user action.
@@ -173,10 +242,15 @@ for (const type of ['pointerdown', 'keydown'] as const) {
   window.addEventListener(type, () => audio.unlock(), { capture: true });
 }
 
+async function saveAudioSettings(): Promise<void> {
+  const s = await store.getSettings();
+  await store.putSettings({ ...s, volume: audio.currentVolume, muted: audio.isMuted });
+}
 volume.addEventListener('input', () => {
   audio.setVolume(Number(volume.value));
   if (audio.isMuted) toggleMute();
 });
+volume.addEventListener('change', () => void saveAudioSettings());
 function toggleMute(): void {
   audio.setMuted(!audio.isMuted);
   btnMute.textContent = audio.isMuted ? '🔇' : '🔊';
@@ -184,6 +258,7 @@ function toggleMute(): void {
 }
 btnMute.addEventListener('click', () => {
   toggleMute();
+  void saveAudioSettings();
   btnMute.blur();
 });
 
@@ -218,9 +293,36 @@ attachTouchControls(touch, (mask) => input.setTouchMask(mask));
 // ---------- Start ----------
 
 async function start(): Promise<void> {
-  setStatus('Loading the emulator…');
-  const audioPort = await audio.init();
-  const engineUrl = new URL('cores/mesen.mjs', document.baseURI).href;
-  send({ type: 'init', engineUrl, audioPort }, audioPort ? [audioPort] : []);
+  setStatus('Loading…');
+  try {
+    store = await IdbStore.open();
+  } catch {
+    store = new MemoryStore();
+    showNotice('This browser does not allow saving. Saves disappear when you close the page; use Saves → Back up to keep them.', [['OK', () => {}]]);
+  }
+  const settings = await store.getSettings();
+  if (settings.volume !== undefined) {
+    volume.value = String(settings.volume);
+    audio.setVolume(settings.volume);
+  }
+  if (settings.muted) toggleMute();
+  session = new Session(store, emulator, thumbnail, __SOURCE_SHA__);
+  session.onStill = (png) => {
+    if (!userPaused) return; // a running game draws the restored picture right away
+    void createImageBitmap(new Blob([png as BlobPart], { type: 'image/png' })).then((img) => {
+      pendingFrame = null;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+    });
+  };
+  saves = new SavesDialog(savesDialog, session, {
+    status: setStatus,
+    done: () => savesDialog.close(),
+  });
+  await audio.init();
+  btnOpen.disabled = false;
+  btnSaves.disabled = false;
+  setStatus('');
 }
 void start();

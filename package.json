@@ -10,7 +10,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:e2e": "node tests/e2e/smoke.ts"
+    "test:e2e": "node tests/e2e/smoke.ts && node tests/e2e/saves.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
@@ -18,5 +18,8 @@
     "typescript": "~5.9.3",
     "vite": "^8.3.8",
     "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "fflate": "^0.8.3"
   }
 }

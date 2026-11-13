@@ -61,13 +61,14 @@ jobs:
           key: engines-${{ hashFiles('scripts/build-engines.sh', '.gitmodules') }}-${{ github.sha }}
           restore-keys: engines-${{ hashFiles('scripts/build-engines.sh', '.gitmodules') }}-
 
+      - run: npm ci
+
       - name: Build engines
         run: |
           ~/emsdk/emsdk activate "$EMSDK_VERSION" > /dev/null
           source ~/emsdk/emsdk_env.sh > /dev/null
           npm run build:engines
 
-      - run: npm ci
       - run: npm test
       - run: npm run build
 

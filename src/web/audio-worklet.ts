@@ -24,13 +24,16 @@ class St8AudioProcessor extends AudioWorkletProcessor {
   private write = 0; // frame position
   private inputRate = 48000;
   private waiting = true; // refilling after an underrun
+  private source: MessagePort | null = null;
 
   constructor() {
     super();
     this.port.onmessage = (e: MessageEvent<Msg>) => {
       // The worker sends us its own port; listen to both.
       if (e.data.type === 'port' && e.ports[0]) {
-        e.ports[0].onmessage = (ev: MessageEvent<Msg>) => this.handle(ev.data);
+        if (this.source) this.source.onmessage = null;
+        this.source = e.ports[0];
+        this.source.onmessage = (ev: MessageEvent<Msg>) => this.handle(ev.data);
         return;
       }
       this.handle(e.data);

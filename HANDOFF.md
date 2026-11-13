@@ -10,9 +10,9 @@ En NES/SNES-emulator som hobbyprojekt, inte kommersiellt. Motorn hålls skild fr
 
 ## Nuläge
 
-Första spelbara NES-versionen för webben är byggd (körning A: F-003, F-004, F-005, F-009, F-011). Testad automatiskt med en egen testfil, både direkt mot motorn och i en webbläsare utan skärm, lokalt och på GitHub (bygg och tester gröna 2026-11-13). Publiceringen misslyckas tills Pages är påslaget. Inte provad med riktiga spel, med handkontroll eller på riktig telefon, och ljudet är inte lyssnat på.
+NES-versionen för webben finns med sparningar och backup (F-003–F-006, F-009–F-011). Testad automatiskt med egna testfiler, både direkt mot motorn och i en webbläsare utan skärm. Inte provad med riktiga spel, med handkontroll eller på riktig telefon, och ljudet är inte lyssnat på. Publiceringen väntar på att Pages slås på.
 
-Nästa steg: användaren slår på GitHub Pages (se Engångsåtgärder) och provar sidan. Därefter körning A i [BACKLOG.md](BACKLOG.md) (save states och backup).
+Pågår: SNES (F-007) och datorversion (F-008), körda efter varandra.
 
 ## Publicering
 
@@ -39,7 +39,7 @@ Se README.md. Kortfattat: Emscripten 7.0.0 aktiverat, sedan `npm ci`, `npm run b
 
 - Upphovsrätt, ROM-filer: kommersiella spel är skyddade. Hanteras genom beslutet ovan.
 - Licenser: Mesen har GPL v3 och Snes9x en egen licens som bara tillåter icke-kommersiell användning. De får inte länkas ihop i samma program, men kan användas sida vid sida som separata filer. Detaljer och krav i docs/ENGINES.md.
-- Lagring i webbläsaren (sparfiler, inställningar): kan beröra 9 kap. 28 § lagen om elektronisk kommunikation. Bedöms i F-006. Källa: PTS.
+- Lagring på användarens enhet (sparfiler, save states, inställningar i IndexedDB): bedömning 2026-11-13, ingen juridisk rådgivning. 9 kap. 28 § LEK kräver samtycke för lagring i användarens utrustning, utom när lagringen behövs för en tjänst som användaren uttryckligen har begärt. Sparningar som användaren själv gör och spelets egna sparfil bedöms falla under undantaget. Ingen spårning, ingen statistik, inga tredjepartstjänster och inget skickas någonstans. Appen säger tydligt att sparningar bara finns på enheten. Källa: PTS.
 
 ## Miljö och begränsningar (2026-11-13)
 

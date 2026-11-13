@@ -70,5 +70,10 @@ JSON
 
 # Licence texts shipped with the app.
 cp LICENSE "$LIC/GPL-3.0.txt"
+if [ -f node_modules/fflate/LICENSE ]; then
+  cp node_modules/fflate/LICENSE "$LIC/fflate-MIT.txt"
+else
+  echo "warning: run npm ci first to include the fflate licence" >&2
+fi
 sed -n '1,/^ \*\//p' engines/mesen/Libretro/libretro.h > "$LIC/libretro-MIT.txt"
 echo "Engines ready in $OUT"

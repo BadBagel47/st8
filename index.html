@@ -14,6 +14,7 @@
         <button id="open" class="primary" disabled>Open game</button>
         <button id="pause" disabled>Pause</button>
         <button id="reset" disabled>Reset</button>
+        <button id="saves" disabled>Saves</button>
         <button id="fullscreen" disabled>Full screen</button>
         <span class="volume">
           <button id="mute" aria-label="Mute" title="Mute">🔊</button>
@@ -23,11 +24,14 @@
       <input id="file" type="file" hidden />
     </header>
 
+    <div id="notice" role="status" hidden></div>
+
     <main id="stage">
       <div id="screen-wrap">
         <canvas id="screen" width="256" height="240"></canvas>
         <div id="hint">
-          <p><strong>Open a game file (.nes)</strong> or drop it here.</p>
+          <p><strong>Open a game file</strong> or drop it here.</p>
+          <p class="small">Supported: NES (.nes)</p>
           <p class="small">Use your own game files. They are read on your device and never uploaded.</p>
         </div>
       </div>
@@ -41,7 +45,13 @@
           <span data-button="SELECT" class="pill">Select</span>
           <span data-button="START" class="pill">Start</span>
         </div>
+        <div class="shoulders snes-only">
+          <span data-button="L" class="pill">L</span>
+          <span data-button="R" class="pill">R</span>
+        </div>
         <div class="face">
+          <span data-button="Y" class="round snes-only">Y</span>
+          <span data-button="X" class="round snes-only">X</span>
           <span data-button="B" class="round">B</span>
           <span data-button="A" class="round">A</span>
         </div>
@@ -55,7 +65,7 @@
       <span aria-hidden="true">·</span>
       <a href="./licenses.html">Licences and source code</a>
       <span aria-hidden="true">·</span>
-      <span>No data is stored or sent anywhere.</span>
+      <span>Saves are stored only on this device. Nothing is sent anywhere.</span>
     </footer>
 
     <dialog id="help">
@@ -68,7 +78,14 @@
         <tr><td>Start</td><td>Enter</td><td>Start / Menu</td></tr>
         <tr><td>Select</td><td>Right Shift or Backspace</td><td>Select / View</td></tr>
       </table>
+      <p class="small">F2 saves a state to slot 1, F4 loads it. More slots and backup are under Saves.</p>
       <p class="small">A second gamepad controls player 2. On touch screens, on-screen buttons appear.</p>
+      <form method="dialog"><button>Close</button></form>
+    </dialog>
+
+    <dialog id="saves-dialog" class="wide">
+      <h2>Saves</h2>
+      <div class="saves-body"></div>
       <form method="dialog"><button>Close</button></form>
     </dialog>
 

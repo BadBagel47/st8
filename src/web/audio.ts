@@ -8,25 +8,31 @@ export class AudioOutput {
   private gain: GainNode | null = null;
   private volume = 0.8;
   private muted = false;
+  private node: AudioWorkletNode | null = null;
 
-  /** Creates the audio graph and returns the port the emulator worker writes to. */
-  async init(): Promise<MessagePort | null> {
-    if (typeof AudioWorkletNode === 'undefined') return null;
+  /** Creates the audio graph. */
+  async init(): Promise<void> {
+    if (typeof AudioWorkletNode === 'undefined') return;
     try {
       this.ctx = new AudioContext({ latencyHint: 'interactive' });
       await this.ctx.audioWorklet.addModule(workletUrl);
-      const node = new AudioWorkletNode(this.ctx, 'st8-audio', { outputChannelCount: [2] });
+      this.node = new AudioWorkletNode(this.ctx, 'st8-audio', { outputChannelCount: [2] });
       this.gain = this.ctx.createGain();
       this.applyVolume();
-      node.connect(this.gain).connect(this.ctx.destination);
-      const channel = new MessageChannel();
-      node.port.postMessage({ type: 'port' }, [channel.port2]);
-      return channel.port1;
+      this.node.connect(this.gain).connect(this.ctx.destination);
     } catch (err) {
       console.warn('Audio is not available', err);
       this.ctx = null;
-      return null;
+      this.node = null;
     }
+  }
+
+  /** A new port for an emulator worker to send samples to (replaces the previous one). */
+  connect(): MessagePort | null {
+    if (!this.node) return null;
+    const channel = new MessageChannel();
+    this.node.port.postMessage({ type: 'port' }, [channel.port2]);
+    return channel.port1;
   }
 
   unlock(): void {
@@ -45,6 +51,10 @@ export class AudioOutput {
   setMuted(m: boolean): void {
     this.muted = m;
     this.applyVolume();
+  }
+
+  get currentVolume(): number {
+    return this.volume;
   }
 
   get isMuted(): boolean {

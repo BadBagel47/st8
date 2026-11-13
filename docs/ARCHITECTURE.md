@@ -46,35 +46,43 @@ Alternative: a native desktop shell in Rust loading natively built engines. Fast
 
 ## Saves and backup
 
+Implemented in F-006 and F-010 (src/web/session.ts, src/web/backup.ts, src/web/storage/).
+
 Three kinds of data per game:
 
-- Battery save: the game's own save memory (`.srm`). Small, standard format that other emulators also read. Written to storage shortly after it changes and when the page is hidden or closed.
-- Save states: full snapshots made by the engine. Several manual slots per game, an automatic "resume" state when leaving a game, and a few rolling automatic states. Each state stores time, a screenshot thumbnail, engine name and engine version.
-- Settings: key mappings and preferences.
+- Battery save: the game's own save memory (`.srm`). Small, standard format that other emulators also read. The worker checks it once a second and the page stores it when it changed, and again when pausing or leaving.
+- Save states: full snapshots made by the engine. Slots: four manual slots ("1"–"4", F2/F4 use slot 1), "resume" (where you left off), three rolling automatic states ("auto-1".."auto-3", one every 5 minutes of play) and "kept-<time>" copies. Each state stores time, a PNG thumbnail and the exact engine (id, version, commit).
+- Settings: volume and mute, time of the last full backup.
+
+"Resume" is written every 5 seconds while playing, when pausing and when the tab is hidden, so closing the page loses at most a few seconds. When a game with a resume state is opened, the game waits until the user chooses Continue or Start over; until then the old resume state is never overwritten.
+
+Nothing is overwritten silently:
+- Replacing the battery save (import of a `.srm`, choosing an older copy, a restore with a newer save) first keeps the progress in memory as a "kept" save state, moves the old save file into the save's history (up to 10 copies), then restarts the game with the new save.
+- A restore that meets a different state in the same slot keeps the newer one in the slot and the older one as a "kept" state.
 
 Game identity is the SHA-256 of the ROM content, so saves follow the game regardless of file name.
 
 Storage:
-- Web: IndexedDB. The app asks the browser for persistent storage to reduce the risk of eviction. Browsers can still clear site data, which is why backup matters.
-- Desktop: plain files in the app's data folder, in the same layout as the backup format.
+- Web: IndexedDB (database "st8": games, saves, states, settings). The app asks the browser for persistent storage the first time something is saved. Browsers can still clear site data, which is why backup matters. If IndexedDB is unavailable, saves live in memory only and the app says so.
+- Desktop: plain files in the app's data folder, in the same layout as the backup format (F-008).
 
-Backup format (one file, `.st8backup`, a ZIP archive):
+Backup format (one ZIP file, `st8-backup-<date>.zip`, or `st8-backup-<game>-<date>.zip` for one game):
 
 ```
-manifest.json                         format version, created time, app version, list of games
-saves/<system>/<romhash>.srm          battery saves, raw standard format
-states/<system>/<romhash>/<slot>.state
-states/<system>/<romhash>/<slot>.png  thumbnail
+manifest.json                                   format "st8-backup", version 1, games, saves, states (with metadata)
 settings.json
+saves/<system>/<romhash>.srm                    battery save
+saves/<system>/<romhash>.history-<n>.srm        older copies
+states/<system>/<romhash>/<slot>.state
+states/<system>/<romhash>/<slot>.png            thumbnail
 ```
 
 - Export: everything, or one game. Never contains ROM files.
-- Restore: merges into existing data. Nothing is overwritten silently: on conflict the newer item wins and the older one is kept as an extra copy.
-- Single battery saves can also be exported and imported as plain `.srm` for use with other emulators.
-- The app shows when the last backup was made and reminds after a period with new saves.
-- Later option: automatic backup to a chosen folder (desktop; and browsers that support folder access).
+- Restore: merges, by the rules above. Restoring the same backup twice changes nothing.
+- A single battery save can be exported and imported as a plain `.srm` for use with other emulators.
+- The app shows when the last full backup was made, and when opening a game reminds about backup if there are saves newer than a backup that is more than 7 days old.
 
-Save state compatibility: a save state belongs to the engine version that made it. Therefore engine versions are pinned, every state records its engine version, and an engine upgrade is only made after an automated test shows that states from the previous version still load. Battery saves do not have this limitation and are the long-term safe format; the app keeps both.
+Save state compatibility: a save state belongs to the engine version that made it. Engine versions are pinned, every state records its engine, and loading a state from another version gives a clear message. Battery saves do not have this limitation and are the long-term safe format; the app keeps both. Before an engine upgrade, check that states from the previous version still load.
 
 ## Build and publishing
 

@@ -78,6 +78,20 @@ describe.skipIf(!haveEngine)('NES engine (Mesen) through the core host', () => {
     expect(host.frame).toEqual(laterFrame);
   });
 
+  it('exposes the battery save and restores it', async () => {
+    const host = await nesHost();
+    for (let i = 0; i < 20; i++) host.runFrame();
+    const save = host.getSaveRam();
+    expect(save).not.toBeNull();
+    expect(save![0]).toBe(counter(host));
+
+    const fresh = await nesHost();
+    const data = new Uint8Array(save!.length);
+    data[0] = 0x42;
+    expect(fresh.setSaveRam(data)).toBe(true);
+    expect(fresh.getSaveRam()![0]).toBe(0x42);
+  });
+
   it('rejects files that are not NES games', async () => {
     const factory = (await import(pathToFileURL(enginePath).href)).default as EngineFactory;
     const host = await CoreHost.create(factory);
