@@ -12,8 +12,9 @@ ID: en gemensam nummerserie. B = bugg, F = funktion, D = planering/design.
   - F-004 – Lägg till ljud
   - F-005 – Styr med tangentbord och handkontroll
   - F-009 – Publicera webbversionen automatiskt via GitHub Pages
-- **C** – standardmodell, medelnivå – Spara spel
-  - F-006 – Sparfiler och sparlägen som ligger kvar i webbläsaren
+- **C** – stark modell, hög nivå – Save states och backup
+  - F-006 – Sparfiler och save states som ligger kvar i webbläsaren
+  - F-010 – Backup: exportera och återställ alla sparfiler och save states som en fil
 - **D** – stark modell, hög nivå – SNES
   - F-007 – Lägg till SNES med Snes9x i samma skal
 - **E** – stark modell, hög nivå – Datorprogram
@@ -29,7 +30,8 @@ ID: en gemensam nummerserie. B = bugg, F = funktion, D = planering/design.
 | F-004 | Hög | Ljud i webbversionen. |
 | F-005 | Hög | Styrning: tangentbord och handkontroll. Pekskärm bedöms i samband med detta. |
 | F-009 | Hög | Bygg och publicering av webbversionen via GitHub Pages. |
-| F-006 | Medel | Sparfiler och sparlägen lagrade lokalt i webbläsaren. Bedöm reglerna om lagring (LEK 9 kap. 28 §). |
+| F-006 | Hög | Sparfiler och save states lagrade lokalt i webbläsaren. Bedöm reglerna om lagring (LEK 9 kap. 28 §). Användarens krav: viktigt. |
+| F-010 | Hög | Backup: exportera och återställ sparfiler och save states som en fil, så att inget går förlorat om webbläsarens lagring rensas. Formatet ska fungera även i datorversionen. Användarens krav: viktigt. |
 | F-007 | Medel | SNES-stöd med Snes9x. |
 | F-008 | Låg | Datorprogram för Windows, Mac och Linux. |
 

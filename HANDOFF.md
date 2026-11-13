@@ -23,6 +23,7 @@ Planerat: GitHub Pages från main. Inte uppsatt och inte verifierat än (ingår 
 - 2026-11-13: Motorer: Mesen för NES, Snes9x för SNES (väloptimerade utan funktionsförlust). En motor per system, inget motorval för användaren. Skalet byggs mot libretro-gränssnittet så att en motor kan bytas senare (t.ex. till bsnes).
 - 2026-11-13: Projektet är ett hobbyprojekt och inte kommersiellt. Det är en förutsättning för Snes9x, vars licens förbjuder kommersiell användning.
 - 2026-11-13: ROM-filer laddas av användaren och läses bara lokalt i webbläsaren. Inga ROM-filer i repot eller på servern.
+- 2026-11-13: Save states och backup är ett kärnkrav (F-006, F-010) och ska finnas med i upplägget från början (D-002).
 - 2026-11-13: Teknik för skalet: Rust rekommenderat (webb via WebAssembly, datorprogram direkt). Slutligt upplägg bestäms i D-002.
 
 ## Lagar och licenser (genomgång 2026-11-13, ingen juridisk bedömning)
@@ -33,7 +34,8 @@ Planerat: GitHub Pages från main. Inte uppsatt och inte verifierat än (ingår 
 
 ## Miljö och begränsningar (2026-11-13)
 
-- Agentens molnsession har GitHub-åtkomst till detta repo. Om push direkt till main och skapande av workflow-filer fungerar noteras här efter första försöket.
+- Agentens molnsession kan pusha direkt till main och skapa workflow-filer (provat 2026-11-13).
+- Agenten kan inte ändra repoinställningar (standardgren, GitHub Pages); det gör användaren.
 
 ## Engångsåtgärder
 
