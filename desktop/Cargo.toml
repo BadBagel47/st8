@@ -1,0 +1,21 @@
+[package]
+name = "st8"
+version = "0.1.0"
+description = "st8 – NES and SNES emulator"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/BadBagel47/st8"
+edition = "2021"
+publish = false
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

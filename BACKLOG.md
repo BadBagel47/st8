@@ -4,14 +4,17 @@ ID: en gemensam nummerserie. B = bugg, F = funktion, D = planering/design.
 
 ## Föreslagna körningar
 
-- **A** – stark modell, hög nivå – Datorprogram
-  - F-008 – Datorversion för Mac och Linux som återanvänder motorerna
+- **A** – standardmodell, medelnivå – Hantera sparningar
+  - F-013 – Ta bort save states och gamla kopior, så att listan går att hålla ren
+
+Parkerat: F-012 (kräver Apple-utvecklarkonto).
 
 ## Öppna
 
 | ID | Prioritet | Beskrivning |
 |---|---|---|
-| F-008 | Låg | Datorprogram för Mac och Linux (inte Windows, användarens beslut 2026-11-13). |
+| F-013 | Låg | Ta bort save states och äldre kopior av sparfilen i sparpanelen. I dag kan inget tas bort, så listan växer med automatiska och behållna kopior. Borttagning måste bekräftas. |
+| F-012 | Låg | Signera och notarisera Mac-appen så att den öppnas utan varning. Kräver ett betalt Apple-utvecklarkonto (användarens beslut). Status: Parkerad. |
 
 ## Parkerat
 
@@ -30,4 +33,5 @@ Inget.
 | F-006 | 2026-11-13 | Spelets egna sparfil och save states sparas i webbläsaren: fyra platser med bild (F2/F4 för plats 1), "där du slutade" som skrivs löpande, automatiska lägen var femte minut. Export/import av .srm och äldre kopior som kan väljas tillbaka. Testat automatiskt i webbläsare, även efter omladdning. |
 | F-010 | 2026-11-13 | Backup av allt eller ett spel som en ZIP-fil, och återställning som slår ihop utan att skriva över (äldre kopior behålls). Påminnelse om backup. Testat automatiskt, även återställning i en tom webbläsare. |
 | F-007 | 2026-11-13 | SNES med Snes9x (.sfc, .smc, .swc, .fig) i samma skal, med alla knappar, skärmknappar för X/Y/L/R, save states, sparfil och backup. Byte mellan NES och SNES startar rätt motor. Testat automatiskt med egen testfil, direkt mot motorn och i webbläsare. |
+| F-008 | 2026-11-13 | Datorversion för Mac (universell) och Linux (AppImage och deb) med Tauri. Samma motorer och sida som webben; sparningar som filer i appens datamapp; spara-dialog för export. Självtest i riktigt fönster: godkänt på Linux här. Mac byggs och testas bara på GitHub. |
 | D-002 | 2026-11-13 | Upplägg framtaget i docs/ARCHITECTURE.md, inklusive save states och backup. Besluten är fattade (se HANDOFF.md). |

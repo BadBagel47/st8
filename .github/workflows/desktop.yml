@@ -1,0 +1,167 @@
+name: Desktop build
+
+# Builds the desktop app for macOS (universal) and Linux, runs its self-test
+# in a real window, and publishes the files on the "desktop-latest" release.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'desktop/**'
+      - 'engines/**'
+      - 'scripts/**'
+      - 'index.html'
+      - 'licenses.html'
+      - 'package*.json'
+      - 'vite.config.ts'
+      - '.gitmodules'
+      - '.github/workflows/desktop.yml'
+  # Pushes made by the auto-merge workflow do not trigger "push" workflows.
+  workflow_run:
+    workflows: ['Auto-merge agent branches to main']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: desktop
+  cancel-in-progress: true
+
+env:
+  EMSDK_VERSION: 7.0.0
+
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos
+            os: macos-latest
+            target: universal-apple-darwin
+            bundles: app,dmg
+          - name: linux
+            os: ubuntu-22.04
+            target: ''
+            bundles: appimage,deb
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          submodules: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Linux build libraries
+        if: matrix.name == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev librsvg2-dev libayatana-appindicator3-dev patchelf xvfb
+
+      - name: Rust targets
+        if: matrix.name == 'macos'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+
+      - name: Cache Emscripten SDK
+        id: emsdk-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/emsdk
+          key: emsdk-${{ runner.os }}-${{ env.EMSDK_VERSION }}
+
+      - name: Install Emscripten SDK
+        if: steps.emsdk-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git ~/emsdk
+          ~/emsdk/emsdk install "$EMSDK_VERSION"
+          ~/emsdk/emsdk activate "$EMSDK_VERSION"
+
+      - name: Cache Rust build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            desktop/target
+          key: cargo-${{ matrix.name }}-${{ hashFiles('desktop/Cargo.lock') }}
+          restore-keys: cargo-${{ matrix.name }}-
+
+      - run: npm ci
+
+      - name: Build engines
+        run: |
+          ~/emsdk/emsdk activate "$EMSDK_VERSION" > /dev/null
+          source ~/emsdk/emsdk_env.sh > /dev/null
+          npm run build:engines
+
+      - run: npm test
+
+      - name: Build desktop app
+        run: |
+          if [ -n "${{ matrix.target }}" ]; then
+            npx tauri build --target "${{ matrix.target }}" --bundles "${{ matrix.bundles }}"
+          else
+            npx tauri build --bundles "${{ matrix.bundles }}"
+          fi
+
+      - name: Self-test (Linux)
+        if: matrix.name == 'linux'
+        run: ST8_SELFTEST=1 xvfb-run -a desktop/target/release/st8
+
+      - name: Self-test (macOS)
+        if: matrix.name == 'macos'
+        run: ST8_SELFTEST=1 desktop/target/universal-apple-darwin/release/st8
+
+      - name: Collect files
+        run: |
+          mkdir -p out
+          git rev-parse HEAD > out/source-commit.txt
+          if [ "${{ matrix.name }}" = macos ]; then
+            cp desktop/target/universal-apple-darwin/release/bundle/dmg/*.dmg out/st8-macos-universal.dmg
+          else
+            cp desktop/target/release/bundle/appimage/*.AppImage out/st8-linux-x86_64.AppImage
+            cp desktop/target/release/bundle/deb/*.deb out/st8-linux-amd64.deb
+          fi
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: st8-${{ matrix.name }}
+          path: out/*
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+
+      - name: Publish on the desktop-latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          SHA="$(head -1 out/source-commit.txt)"
+          rm out/source-commit.txt
+          NOTES="Latest desktop build of st8, made automatically from commit $SHA ($(date -u +%Y-%m-%d)).
+
+          - macOS (Apple silicon and Intel): st8-macos-universal.dmg. The app is not signed: the first time, right-click st8 in Applications and choose Open.
+          - Linux: st8-linux-x86_64.AppImage (make it executable and run it) or st8-linux-amd64.deb.
+
+          Source code of this build: https://github.com/$REPO/tree/$SHA"
+          if ! gh release view desktop-latest -R "$REPO" > /dev/null 2>&1; then
+            gh release create desktop-latest -R "$REPO" --prerelease --target "$SHA" --title "st8 desktop (latest build)" --notes "$NOTES"
+          fi
+          gh release upload desktop-latest out/* -R "$REPO" --clobber
+          gh release edit desktop-latest -R "$REPO" --notes "$NOTES"

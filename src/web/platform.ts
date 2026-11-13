@@ -1,7 +1,10 @@
 // Things that differ between the web page and the desktop app.
 
+import { isDesktop, saveFileDesktop } from './desktop';
+
 /** Offers a file to the user (download on the web, save dialog on desktop). */
 export async function saveFile(name: string, data: Uint8Array, mime = 'application/octet-stream'): Promise<boolean> {
+  if (isDesktop) return saveFileDesktop(name, data);
   const url = URL.createObjectURL(new Blob([data as BlobPart], { type: mime }));
   const a = document.createElement('a');
   a.href = url;

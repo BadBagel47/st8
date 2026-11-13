@@ -16,3 +16,5 @@ poc/engine-check/build/
 build/
 public/cores/
 public/licenses/
+desktop/target/
+desktop/gen/

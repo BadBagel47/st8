@@ -1,6 +1,6 @@
 # Architecture (D-002)
 
-Status: approved 2026-11-13. Implemented for the web (NES) in F-003 to F-011; saves, SNES and desktop are still to come.
+Status: approved 2026-11-13 and implemented: web (F-003 to F-011, F-006, F-010), SNES (F-007), desktop for Mac and Linux (F-008).
 
 ## Goals
 
@@ -64,7 +64,7 @@ Game identity is the SHA-256 of the ROM content, so saves follow the game regard
 
 Storage:
 - Web: IndexedDB (database "st8": games, saves, states, settings). The app asks the browser for persistent storage the first time something is saved. Browsers can still clear site data, which is why backup matters. If IndexedDB is unavailable, saves live in memory only and the app says so.
-- Desktop: plain files in the app's data folder, in the same layout as the backup format (F-008).
+- Desktop: plain files in the app's data folder (`<app data>/data/`, e.g. `~/.local/share/io.github.badbagel47.st8/data` on Linux and `~/Library/Application Support/io.github.badbagel47.st8/data` on macOS), in the same layout as the backup format, written atomically (temporary file, then rename). Code: `src/web/storage/files.ts` and `desktop/src/main.rs`, which only allows paths inside that folder.
 
 Backup format (one ZIP file, `st8-backup-<date>.zip`, or `st8-backup-<game>-<date>.zip` for one game):
 
@@ -88,7 +88,8 @@ Save state compatibility: a save state belongs to the engine version that made i
 
 - Build: GitHub Actions builds the engines with Emscripten (cached per pinned commit) and the shell, then deploys to GitHub Pages.
 - Note for F-009: pushes made by the auto-merge workflow use the built-in token and do not start other "on push" workflows. The deploy workflow must therefore also start on completion of the auto-merge workflow (`workflow_run`), or be branch-based.
-- Desktop builds (later): Tauri build for macOS and Linux in GitHub Actions, published as release files.
+- Desktop: `desktop/` is a Tauri 2 app that embeds the same built web app (dist/) and engine files. `.github/workflows/desktop.yml` builds a universal macOS app (dmg) and Linux AppImage and deb, runs the self-test in a real window on both, and publishes the files on the `desktop-latest` release.
+- Self-test: started with `ST8_SELFTEST=1`; plays the NES and SNES test ROMs in the app window, saves and loads a state, checks that state and save file are stored as files and that a backup round trip works, prints PASS/FAIL lines and exits with 0 on success (`src/selftest/run.ts`).
 
 ## Testing
 

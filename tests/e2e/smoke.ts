@@ -7,7 +7,7 @@
 
 import { chromium } from 'playwright';
 import { preview } from 'vite';
-import { nesTestRom, snesTestRom } from '../roms.ts';
+import { nesTestRom, snesTestRom } from '../../src/selftest/roms.ts';
 
 const server = await preview({ preview: { port: 4174, strictPort: true }, logLevel: 'warn' });
 const base = 'http://localhost:4174/';

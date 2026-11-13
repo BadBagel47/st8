@@ -2,10 +2,12 @@
 
 import type { AvInfo } from '../core/host';
 import { AudioOutput } from './audio';
+import { desktopFiles, invoke, isDesktop } from './desktop';
 import { Emulator } from './emulator';
 import { Input, attachTouchControls } from './input';
 import { SavesDialog } from './saves-ui';
 import { QUICK_SLOT, Session } from './session';
+import { FileStore } from './storage/files';
 import { IdbStore } from './storage/idb';
 import { MemoryStore } from './storage/memory';
 import type { SaveStore } from './storage/types';
@@ -118,11 +120,20 @@ requestAnimationFrame(loop);
 
 async function openFile(file: File): Promise<void> {
   audio.unlock();
+  const error = await openGame(file.name, new Uint8Array(await file.arrayBuffer()));
+  if (!error) await offerResume();
+}
+
+/** Starts a game. Returns an error message, or null when it is running. */
+async function openGame(name: string, bytes: Uint8Array): Promise<string | null> {
   notice.hidden = true;
-  setStatus(`Starting ${file.name}…`);
+  setStatus(`Starting ${name}…`);
   try {
-    const result = await session.open({ name: file.name, bytes: new Uint8Array(await file.arrayBuffer()) });
-    if (typeof result === 'string') return setStatus(result, true);
+    const result = await session.open({ name, bytes });
+    if (typeof result === 'string') {
+      setStatus(result, true);
+      return result;
+    }
     gameLoaded = true;
     userPaused = false;
     hint.hidden = true;
@@ -131,9 +142,11 @@ async function openFile(file: File): Promise<void> {
     document.body.dataset.system = session.current!.game.system;
     applyAv(result);
     setStatus(audio.available ? '' : 'Sound is not available in this browser.');
-    await offerResume();
+    return null;
   } catch (err) {
-    setStatus(err instanceof Error ? err.message : String(err), true);
+    const message = err instanceof Error ? err.message : String(err);
+    setStatus(message, true);
+    return message;
   }
 }
 
@@ -295,7 +308,7 @@ attachTouchControls(touch, (mask) => input.setTouchMask(mask));
 async function start(): Promise<void> {
   setStatus('Loading…');
   try {
-    store = await IdbStore.open();
+    store = isDesktop ? new FileStore(desktopFiles) : await IdbStore.open();
   } catch {
     store = new MemoryStore();
     showNotice('This browser does not allow saving. Saves disappear when you close the page; use Saves → Back up to keep them.', [['OK', () => {}]]);
@@ -324,5 +337,13 @@ async function start(): Promise<void> {
   btnOpen.disabled = false;
   btnSaves.disabled = false;
   setStatus('');
+  if (isDesktop && (await invoke<boolean>('selftest_enabled'))) await selfTest();
 }
+
+async function selfTest(): Promise<void> {
+  const { runSelfTest } = await import('../selftest/run');
+  const { passed, report } = await runSelfTest({ open: openGame, session, store, canvas, audioAvailable: audio.available });
+  await invoke('selftest_report', { passed, report });
+}
+
 void start();

@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { chromium, type Page } from 'playwright';
 import { preview } from 'vite';
-import { nesTestRom } from '../roms.ts';
+import { nesTestRom } from '../../src/selftest/roms.ts';
 
 const PORT = 4176;
 const server = await preview({ preview: { port: PORT, strictPort: true }, logLevel: 'warn' });

@@ -10,13 +10,15 @@ En NES/SNES-emulator som hobbyprojekt, inte kommersiellt. Motorn hålls skild fr
 
 ## Nuläge
 
-Webbversionen spelar NES och SNES, med sparningar och backup (F-003–F-007, F-009–F-011). Testad automatiskt med egna testfiler, både direkt mot motorn och i en webbläsare utan skärm. Inte provad med riktiga spel, med handkontroll eller på riktig telefon, och ljudet är inte lyssnat på. Publiceringen väntar på att Pages slås på.
+Webbversionen spelar NES och SNES, med sparningar och backup (F-003–F-007, F-009–F-011). Datorversion för Mac och Linux finns (F-008). Allt är testat automatiskt med egna testfiler: direkt mot motorerna, i en webbläsare utan skärm och, för datorversionen, med ett självtest i ett riktigt fönster (Linux här, Mac på GitHub). Inte provat med riktiga spel, med handkontroll eller på riktig telefon, och ljudet är inte lyssnat på. Webbpubliceringen väntar på att Pages slås på.
 
-Pågår: datorversion för Mac och Linux (F-008).
+Nästa steg: användaren slår på Pages och provar. Förslag på körning i [BACKLOG.md](BACKLOG.md).
 
 ## Publicering
 
 GitHub Pages via GitHub Actions (.github/workflows/deploy.yml): bygger motorerna, kör testerna och publicerar dist/ till https://badbagel47.github.io/st8/ vid varje push till main (och när auto-merge har körts). Kräver att Pages är påslaget med källan "GitHub Actions" (se Engångsåtgärder). Agentens grenar (claude/…) slås ihop med main automatiskt via .github/workflows/auto-merge.yml.
+
+Datorversionen: .github/workflows/desktop.yml bygger Mac (universell dmg) och Linux (AppImage, deb), kör självtestet och lägger filerna på releasen "desktop-latest": https://github.com/BadBagel47/st8/releases/tag/desktop-latest. Mac-appen är inte signerad (se F-012).
 
 ## Bygga lokalt
 
@@ -31,7 +33,8 @@ Se README.md. Kortfattat: Emscripten 7.0.0 aktiverat, sedan `npm ci`, `npm run b
 - 2026-11-13: ROM-filer laddas av användaren och läses bara lokalt i webbläsaren. Inga ROM-filer i repot eller på servern.
 - 2026-11-13: Save states och backup är ett kärnkrav (F-006, F-010) och ska finnas med i upplägget från början (D-002).
 - 2026-11-13: Teknik för skalet: TypeScript för webben och Tauri för datorversionen (användaren körde vidare på rekommendationen efter D-002; ersätter den tidigare Rust-rekommendationen).
-- 2026-11-13: Datorversionen (F-008) planeras bara för Mac och Linux, inte Windows.
+- 2026-11-13: Datorversionen (F-008) görs bara för Mac och Linux, inte Windows.
+- 2026-11-13: Datorversionen sparar som filer i appens datamapp (inte webbvyns lagring), i samma struktur som backupen.
 - 2026-11-13: Vår egen kod licensieras under GPL v3 eller senare (användaren körde vidare på rekommendationen).
 - 2026-11-13: Varje motor byggs som en egen fil och länkas aldrig ihop med den andra (licensskäl, docs/ENGINES.md). Motorversionerna låses, eftersom save states hör till motorversionen.
 
@@ -44,6 +47,8 @@ Se README.md. Kortfattat: Emscripten 7.0.0 aktiverat, sedan `npm ci`, `npm run b
 ## Miljö och begränsningar (2026-11-13)
 
 - Agentens molnsession kan pusha direkt till main och skapa workflow-filer (provat 2026-11-13).
+- Agenten kan inte nå badbagel47.github.io från sin miljö (nätverket stoppar adressen); publiceringen kontrolleras via GitHub Actions.
+- Agenten kan installera Linux-paket och köra datorappen i ett virtuellt fönster (xvfb).
 - Agenten kan läsa och klona publika repon (t.ex. motorernas källkod) och installera Emscripten i sessionen.
 - Agenten kan inte ändra repoinställningar (standardgren, GitHub Pages); det gör användaren.
 

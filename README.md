@@ -1,8 +1,14 @@
 # st8
 
-A NES and SNES emulator for the web, with a desktop version for Mac and Linux planned. A non-commercial hobby project.
+A NES and SNES emulator for the web and for Mac and Linux. A non-commercial hobby project.
 
-**Play:** https://badbagel47.github.io/st8/
+**Play in the browser:** https://badbagel47.github.io/st8/
+
+**Desktop app:** download from the [desktop-latest release](https://github.com/BadBagel47/st8/releases/tag/desktop-latest).
+- macOS (Apple silicon and Intel): `st8-macos-universal.dmg`. The app is not signed, so the first time: right-click st8 in Applications and choose Open.
+- Linux: `st8-linux-x86_64.AppImage` (make it executable and run it) or `st8-linux-amd64.deb`.
+
+Save states, the games' own save files and backup work the same in both. A backup made in the browser can be restored in the desktop app and the other way round.
 
 Load your own game files (`.nes`, `.sfc`, `.smc`). They are read on your device and never uploaded. No games are included.
 
@@ -28,7 +34,15 @@ npm run build:engines   # builds the engines to WebAssembly (needs emcc)
 npm test                # engine tests in Node
 npm run dev             # local development server
 npm run build           # production build in dist/
-npm run test:e2e        # browser smoke test of dist/
+npm run test:e2e        # browser tests of dist/
+```
+
+Desktop app (needs Rust, and on Linux the WebKitGTK 4.1 development packages, see `.github/workflows/desktop.yml`):
+
+```bash
+npm run desktop:dev     # run the desktop app against the dev server
+npm run desktop:build   # build installers in desktop/target/release/bundle/
+ST8_SELFTEST=1 desktop/target/release/st8   # self-test in a real window
 ```
 
 ## Licence

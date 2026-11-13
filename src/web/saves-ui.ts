@@ -1,6 +1,7 @@
 // The "Saves" dialog: save state slots, automatic states, the game's own
 // save file and backup.
 
+import { isDesktop } from './desktop';
 import { pickFile } from './platform';
 import { MANUAL_SLOTS, slotLabel, type Session } from './session';
 import type { StateSummary } from './storage/types';
@@ -127,7 +128,9 @@ export class SavesDialog {
     const { lastBackupAt } = await session.store.getSettings();
     body.append(
       el('p', {}, `Last full backup: ${lastBackupAt ? time(lastBackupAt) : 'never'}.`),
-      el('p', { class: 'small' }, 'Saves are stored only on this device. A browser may delete them when storage runs low or when you clear site data, so make a backup now and then. Backups contain saves and settings, never game files.'),
+      el('p', { class: 'small' }, isDesktop
+        ? "Saves are stored in st8's data folder on this computer. Make a backup now and then, for example before reinstalling. Backups contain saves and settings, never game files."
+        : 'Saves are stored only on this device. A browser may delete them when storage runs low or when you clear site data, so make a backup now and then. Backups contain saves and settings, never game files.'),
     );
     const backupActions = el('div', { class: 'row' }, button('Back up everything', () => this.backup(false), 'primary'));
     if (cur) backupActions.append(button('Back up this game', () => this.backup(true)));
