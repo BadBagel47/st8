@@ -10,9 +10,9 @@ En NES/SNES-emulator som hobbyprojekt, inte kommersiellt. Motorn hålls skild fr
 
 ## Nuläge
 
-Webbversionen spelar NES och SNES, med sparningar och backup (F-003–F-007, F-009–F-011). Datorversion för Mac och Linux finns (F-008). Allt är testat automatiskt med egna testfiler: direkt mot motorerna, i en webbläsare utan skärm och, för datorversionen, med ett självtest i ett riktigt fönster (Linux här, Mac på GitHub). Inte provat med riktiga spel, med handkontroll eller på riktig telefon, och ljudet är inte lyssnat på. Webbpubliceringen väntar på att Pages slås på.
+Webbversionen spelar NES och SNES, med sparningar och backup (F-003–F-007, F-009–F-011). Datorversion för Mac och Linux finns (F-008). Allt är testat automatiskt med egna testfiler: direkt mot motorerna, i en webbläsare utan skärm och, för datorversionen, med ett självtest i ett riktigt fönster (Linux här, Mac på GitHub). Inte provat med riktiga spel, med handkontroll eller på riktig telefon, och ljudet är inte lyssnat på. Webbsidan är publicerad och datorversionerna ligger på releasen desktop-latest (verifierat via GitHub Actions 2026-11-13; sidan går inte att öppna från agentens miljö).
 
-Nästa steg: användaren slår på Pages och provar. Förslag på körning i [BACKLOG.md](BACKLOG.md).
+Nästa steg: användaren provar med riktiga spel, på telefon och på Mac/Linux. Förslag på körning i [BACKLOG.md](BACKLOG.md).
 
 ## Publicering
 
@@ -55,7 +55,7 @@ Se README.md. Kortfattat: Emscripten 7.0.0 aktiverat, sedan `npm ci`, `npm run b
 ## Engångsåtgärder
 
 - Byt standardgren till main i repoinställningarna: gjort 2026-11-13.
-- Slå på GitHub Pages med källan "GitHub Actions": väntar. Agenten kan inte ändra repoinställningar.
+- Slå på GitHub Pages med källan "GitHub Actions": gjort 2026-11-13.
 
 ## Dokumentkarta
 
