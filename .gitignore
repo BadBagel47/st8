@@ -1,0 +1,15 @@
+# Never commit game files
+*.nes
+*.sfc
+*.smc
+*.fds
+*.unf
+*.unif
+# Build output
+*.wasm
+*.bc
+*.a
+*.o
+node_modules/
+dist/
+poc/engine-check/build/
