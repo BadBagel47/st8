@@ -55,6 +55,7 @@ try {
   if (process.env.SCREENSHOT_DIR) await page.screenshot({ path: `${process.env.SCREENSHOT_DIR}/play.png` });
 
   await page.click('#pause');
+  await page.waitForTimeout(200); // let frames already on their way arrive
   const p1 = await pixel();
   await page.waitForTimeout(300);
   const p2 = await pixel();
