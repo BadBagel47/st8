@@ -40,10 +40,15 @@ try {
       return [d[0], d[1], d[2], c.width, c.height];
     });
   const a = await pixel();
-  await page.waitForTimeout(300);
-  const b = await pixel();
   check(a[3] === 256 && a[4] >= 224, `frame size is ${a[3]}x${a[4]}`);
-  check(a.slice(0, 3).join() !== b.slice(0, 3).join(), 'the picture changes over time');
+  // The colour cycles through the palette, where several entries are black,
+  // so sample for a while and expect several different colours.
+  const colours = new Set<string>();
+  for (let i = 0; i < 10; i++) {
+    colours.add((await pixel()).slice(0, 3).join());
+    await page.waitForTimeout(110);
+  }
+  check(colours.size >= 3, `the picture changes over time (${colours.size} colours seen)`);
 
   await page.keyboard.down('ArrowRight');
   await page.waitForTimeout(300);
